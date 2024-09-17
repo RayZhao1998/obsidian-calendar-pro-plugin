@@ -2,26 +2,30 @@ import React from "react";
 import { Plugin, ItemView, WorkspaceLeaf, IconName } from "obsidian";
 import { Root, createRoot } from "react-dom/client";
 import { SideBarReactView } from "./SideBarReactView";
+import {
+	CalendarProSettings,
+	CalendarProSettingTab,
+	DEFAULT_SETTINGS,
+} from "settings";
 
 // Remember to rename these classes and interfaces!
 
-interface MyPluginSettings {
-	mySetting: string;
-}
-
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: "default",
-};
-
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+export default class CalendarProPlugin extends Plugin {
+	settings: CalendarProSettings;
 
 	async onload() {
-		this.registerView(SideBarViewType, (leaf) => new SideBarView(leaf));
+		await this.loadSettings();
+
+		this.registerView(
+			SideBarViewType,
+			(leaf) => new SideBarView(leaf, this)
+		);
 
 		this.addRibbonIcon("dice", "Activate view", () => {
 			this.activateView();
 		});
+
+		this.addSettingTab(new CalendarProSettingTab(this.app, this));
 	}
 
 	async activateView() {
@@ -62,9 +66,11 @@ const SideBarViewType = "sidebar-view";
 
 export class SideBarView extends ItemView {
 	root: Root | null = null;
+	plugin: CalendarProPlugin;
 
-	constructor(leaf: WorkspaceLeaf) {
+	constructor(leaf: WorkspaceLeaf, plugin: CalendarProPlugin) {
 		super(leaf);
+		this.plugin = plugin;
 	}
 
 	getViewType(): string {
@@ -81,6 +87,8 @@ export class SideBarView extends ItemView {
 
 	async onOpen() {
 		this.root = createRoot(this.containerEl.children[1]);
-		this.root.render(<SideBarReactView app={this.app} />);
+		this.root.render(
+			<SideBarReactView app={this.app} plugin={this.plugin} />
+		);
 	}
 }

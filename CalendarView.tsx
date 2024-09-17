@@ -1,13 +1,21 @@
-import { App } from "obsidian";
+import CalendarProPlugin from "main";
+import { App, moment } from "obsidian";
 import React, { useState } from "react";
 
-export const CalendarView = (props: { app: App }) => {
-	const { app } = props;
+export const CalendarView = (props: {
+	app: App;
+	plugin: CalendarProPlugin;
+}) => {
+	const { app, plugin } = props;
 	const [currentDate, setCurrentDate] = useState(new Date());
 	const year = currentDate.getFullYear();
 	const month = currentDate.getMonth();
 	const today = new Date();
-	const weeks = getWeeksInMonth(year, month);
+	const weeks = getWeeksInMonth(
+		year,
+		month,
+		Number(plugin.settings.startDayOfWeek) ?? 0
+	);
 
 	const changeMonth = (delta: number) => {
 		setCurrentDate(new Date(year, month + delta, 1));
@@ -18,22 +26,63 @@ export const CalendarView = (props: { app: App }) => {
 	};
 
 	const handleDateClick = async (date: Date) => {
-		const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
-			.toString()
-			.padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
-		const fileName = `${formattedDate}.md`;
-		const file = app.vault.getAbstractFileByPath(fileName);
+		const { rootFolder, diaryFolder, diaryFileName } = plugin.settings;
+
+		// Format the date using moment.js
+		const formattedDate = moment(date).format(diaryFileName);
+
+		// Construct the full path
+		const folderPath = `${rootFolder}/${diaryFolder}`.replace(
+			/^\/+|\/+$/g,
+			""
+		); // Remove leading/trailing slashes
+		const filePath = `${folderPath}/${formattedDate}.md`;
+
+		// Check if the folder exists, if not, create it
+		const folderExists = await app.vault.adapter.exists(folderPath);
+		if (!folderExists) {
+			await app.vault.createFolder(folderPath);
+		}
+
+		const file = app.vault.getAbstractFileByPath(filePath);
 
 		if (file) {
 			// File exists, open it
-			await app.workspace.openLinkText(fileName, "");
+			await app.workspace.openLinkText(filePath, "");
 		} else {
-			// File doesn't exist, create it
-			const _ = await app.vault.create(
-				fileName,
-				`# ${formattedDate}\n\n`
-			);
-			await app.workspace.openLinkText(fileName, "");
+			const content = ``;
+			await app.vault.create(filePath, content);
+			await app.workspace.openLinkText(filePath, "");
+		}
+	};
+
+	const handleWeekClick = async (
+		year: number,
+		month: number,
+		weekIndex: number
+	) => {
+		const { rootFolder, weeklyFolder, weeklyFileName } = plugin.settings;
+		// Calculate the date of the first day of the selected week
+		const weekStartDate = new Date(year, month, weekIndex * 7);
+
+		// Format the date using moment.js
+		const formattedDate = moment(weekStartDate).format(weeklyFileName);
+		const folderPath = `${rootFolder}/${weeklyFolder}`.replace(
+			/^\/+|\/+$/g,
+			""
+		);
+		const filePath = `${folderPath}/${formattedDate}.md`;
+		const folderExists = await app.vault.adapter.exists(folderPath);
+		if (!folderExists) {
+			await app.vault.createFolder(folderPath);
+		}
+		const file = app.vault.getAbstractFileByPath(filePath);
+		if (file) {
+			await app.workspace.openLinkText(filePath, "");
+		} else {
+			const content = ``;
+			await app.vault.create(filePath, content);
+			await app.workspace.openLinkText(filePath, "");
 		}
 	};
 
@@ -89,14 +138,27 @@ export const CalendarView = (props: { app: App }) => {
 				>
 					CW
 				</div>
-				{["日", "一", "二", "三", "四", "五", "六"].map((day) => (
-					<div
-						key={day}
-						style={{ width: "40px", textAlign: "center" }}
-					>
-						{day}
-					</div>
-				))}
+				{[...Array(7)].map((_, index) => {
+					const dayIndex =
+						(index + Number(plugin.settings.startDayOfWeek)) % 7;
+					const days = [
+						"Sun",
+						"Mon",
+						"Tue",
+						"Wed",
+						"Thu",
+						"Fri",
+						"Sat",
+					];
+					return (
+						<div
+							key={days[dayIndex]}
+							style={{ width: "40px", textAlign: "center" }}
+						>
+							{days[dayIndex]}
+						</div>
+					);
+				})}
 			</div>
 			{weeks.map((week, weekIndex) => {
 				const isCurrentWeek = week.some(
@@ -127,6 +189,9 @@ export const CalendarView = (props: { app: App }) => {
 									? "var(--color-base-05)"
 									: "transparent",
 							}}
+							onClick={() =>
+								handleWeekClick(year, month, weekIndex)
+							}
 						>
 							{getWeekNumber(year, month, weekIndex)}
 						</div>
@@ -180,15 +245,23 @@ const buttonStyle = {
 	margin: "0 5px",
 };
 
-const getWeeksInMonth = (year: number, month: number) => {
+const getWeeksInMonth = (
+	year: number,
+	month: number,
+	startDayOfWeek: number
+) => {
 	const weeks = [];
 	const firstDay = new Date(year, month, 1);
 	const lastDay = new Date(year, month + 1, 0);
 
-	// 获取上个月的最后几天
+	// Adjust the first day of the week
+	let start = firstDay.getDay() - startDayOfWeek;
+	if (start < 0) start += 7;
+
+	// Get the last few days of the previous month
 	const prevMonthDays = [];
-	for (let i = 0; i < firstDay.getDay(); i++) {
-		const day = new Date(year, month, -i);
+	for (let i = 0; i < start; i++) {
+		const day = new Date(year, month, -i + 1 - start);
 		prevMonthDays.unshift(day);
 	}
 
@@ -202,7 +275,7 @@ const getWeeksInMonth = (year: number, month: number) => {
 		}
 	}
 
-	// 填充下个月的前几天
+	// Fill in the first few days of the next month
 	if (currentWeek.length > 0) {
 		const nextMonthDays = 7 - currentWeek.length;
 		for (let i = 1; i <= nextMonthDays; i++) {

@@ -4,9 +4,10 @@ import { CalendarView } from "./CalendarView";
 import { MonthView } from "./MonthView";
 import { App } from "obsidian";
 import * as Tabs from '@radix-ui/react-tabs';
+import CalendarProPlugin from "main";
 
-export const SideBarReactView = (props: { app: App }) => {
-	const { app } = props;
+export const SideBarReactView = (props: { app: App, plugin: CalendarProPlugin }) => {
+	const { app, plugin } = props;
 
 	return (
 		<Tabs.Root
@@ -26,7 +27,7 @@ export const SideBarReactView = (props: { app: App }) => {
 				</Tabs.Trigger>
 			</Tabs.List>
 			<Tabs.Content className="TabsContent" value="tab1">
-				<CalendarView app={app} />
+				<CalendarView app={app} plugin={plugin}/>
 			</Tabs.Content>
 			<Tabs.Content className="TabsContent" value="tab2">
 				<MonthView app={app} />
