@@ -6,3 +6,49 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+@import "@radix-ui/colors/black-alpha.css";
+@import "@radix-ui/colors/green.css";
+@import "@radix-ui/colors/mauve.css";
+@import "@radix-ui/colors/violet.css";
+
+/* Tab styles */
+.TabsRoot {
+	width: 100%;
+	border-radius: 0.375rem;
+	overflow: hidden;
+}
+
+.TabsList {
+	display: flex;
+	background-color: var(--color-base-20);
+	padding: 0.25rem;
+}
+
+.TabsTrigger {
+	flex: 1;
+	padding: 8px 16px;
+	font-size: 14px;
+	font-weight: 500;
+	background-color: transparent !important;
+	box-shadow: none !important;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	color: var(--color-base-60);
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+}
+
+.TabsTrigger[data-state="active"] {
+	color: var(--color-base-100);
+	background-color: var(--color-base-00) !important;
+	box-shadow: 0 1px 3px 0 rgba(var(--mono-rgb-100), 0.1),
+		0 1px 2px -1px rgba(var(--mono-rgb-100), 0.1) !important;
+}
+
+.TabsContent {
+	background-color: transparent;
+	outline: none;
+}
