@@ -1,5 +1,5 @@
 import CalendarProPlugin from "main";
-import { App, moment } from "obsidian";
+import { App, moment, TFile } from "obsidian";
 import React, { useState } from "react";
 
 export const CalendarView = (props: {
@@ -26,7 +26,8 @@ export const CalendarView = (props: {
 	};
 
 	const handleDateClick = async (date: Date) => {
-		const { rootFolder, diaryFolder, diaryFileName } = plugin.settings;
+		const { rootFolder, diaryFolder, diaryFileName, diaryFileTemplate } =
+			plugin.settings;
 
 		// Format the date using moment.js
 		const formattedDate = moment(date).format(diaryFileName);
@@ -50,7 +51,16 @@ export const CalendarView = (props: {
 			// File exists, open it
 			await app.workspace.openLinkText(filePath, "");
 		} else {
-			const content = ``;
+			let content = ``;
+			console.log(diaryFileTemplate);
+			if (diaryFileTemplate) {
+				const templateFile =
+					app.vault.getAbstractFileByPath(diaryFileTemplate);
+				console.log(templateFile);
+				if (templateFile && templateFile instanceof TFile) {
+					content = await app.vault.read(templateFile);
+				}
+			}
 			await app.vault.create(filePath, content);
 			await app.workspace.openLinkText(filePath, "");
 		}
@@ -61,7 +71,8 @@ export const CalendarView = (props: {
 		month: number,
 		weekIndex: number
 	) => {
-		const { rootFolder, weeklyFolder, weeklyFileName } = plugin.settings;
+		const { rootFolder, weeklyFolder, weeklyFileName, weeklyFileTemplate } =
+			plugin.settings;
 		// Calculate the date of the first day of the selected week
 		const weekStartDate = new Date(year, month, weekIndex * 7);
 
@@ -80,7 +91,52 @@ export const CalendarView = (props: {
 		if (file) {
 			await app.workspace.openLinkText(filePath, "");
 		} else {
-			const content = ``;
+			let content = ``;
+			if (weeklyFileTemplate) {
+				const templateFile =
+					app.vault.getAbstractFileByPath(weeklyFileTemplate);
+				if (templateFile && templateFile instanceof TFile) {
+					content = await app.vault.read(templateFile);
+				}
+			}
+			await app.vault.create(filePath, content);
+			await app.workspace.openLinkText(filePath, "");
+		}
+	};
+
+	const handleMonthClick = async () => {
+		const {
+			rootFolder,
+			monthlyFolder,
+			monthlyFileName,
+			monthlyFileTemplate,
+		} = plugin.settings;
+		// Create a date object for the first day of the current month
+		const monthDate = new Date(year, month, 1);
+
+		// Format the date using moment.js
+		const formattedDate = moment(monthDate).format(monthlyFileName);
+		const folderPath = `${rootFolder}/${monthlyFolder}`.replace(
+			/^\/+|\/+$/g,
+			""
+		);
+		const filePath = `${folderPath}/${formattedDate}.md`;
+		const folderExists = await app.vault.adapter.exists(folderPath);
+		if (!folderExists) {
+			await app.vault.createFolder(folderPath);
+		}
+		const file = app.vault.getAbstractFileByPath(filePath);
+		if (file) {
+			await app.workspace.openLinkText(filePath, "");
+		} else {
+			let content = ``;
+			if (monthlyFileTemplate) {
+				const templateFile =
+					app.vault.getAbstractFileByPath(monthlyFileTemplate);
+				if (templateFile && templateFile instanceof TFile) {
+					content = await app.vault.read(templateFile);
+				}
+			}
 			await app.vault.create(filePath, content);
 			await app.workspace.openLinkText(filePath, "");
 		}
@@ -104,7 +160,10 @@ export const CalendarView = (props: {
 					marginBottom: "10px",
 				}}
 			>
-				<h2 style={{ color: "var(--color-green)", margin: 0 }}>
+				<h2
+					style={{ color: "var(--color-green)", margin: 0 }}
+					onClick={handleMonthClick}
+				>
 					{year}年{month + 1}月
 				</h2>
 				<div>
