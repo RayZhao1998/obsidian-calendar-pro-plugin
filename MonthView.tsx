@@ -1,7 +1,15 @@
 import React, { useState } from "react";
-import { App } from "obsidian";
+import { App, moment } from "obsidian";
+import CalendarProPlugin from "main";
+import { clickToOpenFile, NoteType } from "utils";
 
-export const MonthView = ({ app }: { app: App }) => {
+export const MonthView = ({
+	app,
+	plugin,
+}: {
+	app: App;
+	plugin: CalendarProPlugin;
+}) => {
 	const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 	const today = new Date();
 
@@ -9,26 +17,25 @@ export const MonthView = ({ app }: { app: App }) => {
 		setCurrentYear(currentYear + delta);
 	};
 
-	const handleClick = async (type: "month" | "quarter", value: number) => {
-		let fileName: string;
-		let content: string;
+	const handleMonthClick = async (month: number) => {
+		const { monthlyFileName } = plugin.settings;
+		const date = moment().year(currentYear).month(month - 1);
+		const formattedDate = date.format(monthlyFileName);
+		await clickToOpenFile(app, plugin, NoteType.MONTHLY, formattedDate);
+	};
 
-		if (type === "month") {
-			fileName = `${currentYear}-${value.toString().padStart(2, "0")}.md`;
-			content = `# ${currentYear}年${value}月\n\n`;
-		} else {
-			fileName = `${currentYear}-Q${value}.md`;
-			content = `# ${currentYear}年第${value}季度\n\n`;
-		}
+	const handleQuarterClick = async (quarter: number) => {
+		const { quarterlyFileName } = plugin.settings;
+		const date = moment().year(currentYear).quarter(quarter);
+		const formattedDate = date.format(quarterlyFileName);
+		await clickToOpenFile(app, plugin, NoteType.QUATERLY, formattedDate);
+	};
 
-		const file = app.vault.getAbstractFileByPath(fileName);
-
-		if (file) {
-			await app.workspace.openLinkText(fileName, "");
-		} else {
-			await app.vault.create(fileName, content);
-			await app.workspace.openLinkText(fileName, "");
-		}
+	const handleYearClick = async (year: number) => {
+		const { yearlyFileName } = plugin.settings;
+		const date = moment().year(year);
+		const formattedDate = date.format(yearlyFileName);
+		await clickToOpenFile(app, plugin, NoteType.YEARLY, formattedDate);
 	};
 
 	const handleThisMonthClick = () => {
@@ -60,7 +67,10 @@ export const MonthView = ({ app }: { app: App }) => {
 					marginBottom: "10px",
 				}}
 			>
-				<h2 style={{ color: "var(--color-green)", margin: 0 }}>
+				<h2
+					style={{ color: "var(--color-green)", margin: 0 }}
+					onClick={() => handleYearClick(currentYear)}
+				>
 					{currentYear}
 				</h2>
 				<div>
@@ -101,7 +111,7 @@ export const MonthView = ({ app }: { app: App }) => {
 							justifyContent: "center",
 							cursor: "pointer",
 						}}
-						onClick={() => handleClick("quarter", index + 1)}
+						onClick={() => handleQuarterClick(index + 1)}
 					>
 						{quarter.q}
 					</div>
@@ -120,7 +130,7 @@ export const MonthView = ({ app }: { app: App }) => {
 								justifyContent: "center",
 								cursor: "pointer",
 							}}
-							onClick={() => handleClick("month", month)}
+							onClick={() => handleMonthClick(month)}
 						>
 							{month}月
 						</div>

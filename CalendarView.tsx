@@ -1,6 +1,7 @@
 import CalendarProPlugin from "main";
-import { App, moment, TFile } from "obsidian";
+import { App, moment } from "obsidian";
 import React, { useState } from "react";
+import { clickToOpenFile, NoteType } from "utils";
 
 export const CalendarView = (props: {
 	app: App;
@@ -26,44 +27,11 @@ export const CalendarView = (props: {
 	};
 
 	const handleDateClick = async (date: Date) => {
-		const { rootFolder, diaryFolder, diaryFileName, diaryFileTemplate } =
-			plugin.settings;
+		const { diaryFileName } = plugin.settings;
 
 		// Format the date using moment.js
 		const formattedDate = moment(date).format(diaryFileName);
-
-		// Construct the full path
-		const folderPath = `${rootFolder}/${diaryFolder}`.replace(
-			/^\/+|\/+$/g,
-			""
-		); // Remove leading/trailing slashes
-		const filePath = `${folderPath}/${formattedDate}.md`;
-
-		// Check if the folder exists, if not, create it
-		const folderExists = await app.vault.adapter.exists(folderPath);
-		if (!folderExists) {
-			await app.vault.createFolder(folderPath);
-		}
-
-		const file = app.vault.getAbstractFileByPath(filePath);
-
-		if (file) {
-			// File exists, open it
-			await app.workspace.openLinkText(filePath, "");
-		} else {
-			let content = ``;
-			console.log(diaryFileTemplate);
-			if (diaryFileTemplate) {
-				const templateFile =
-					app.vault.getAbstractFileByPath(diaryFileTemplate);
-				console.log(templateFile);
-				if (templateFile && templateFile instanceof TFile) {
-					content = await app.vault.read(templateFile);
-				}
-			}
-			await app.vault.create(filePath, content);
-			await app.workspace.openLinkText(filePath, "");
-		}
+		await clickToOpenFile(app, plugin, NoteType.DAILY, formattedDate);
 	};
 
 	const handleWeekClick = async (
@@ -71,75 +39,23 @@ export const CalendarView = (props: {
 		month: number,
 		weekIndex: number
 	) => {
-		const { rootFolder, weeklyFolder, weeklyFileName, weeklyFileTemplate } =
-			plugin.settings;
+		const { weeklyFileName } = plugin.settings;
 		// Calculate the date of the first day of the selected week
 		const weekStartDate = new Date(year, month, weekIndex * 7);
 
 		// Format the date using moment.js
 		const formattedDate = moment(weekStartDate).format(weeklyFileName);
-		const folderPath = `${rootFolder}/${weeklyFolder}`.replace(
-			/^\/+|\/+$/g,
-			""
-		);
-		const filePath = `${folderPath}/${formattedDate}.md`;
-		const folderExists = await app.vault.adapter.exists(folderPath);
-		if (!folderExists) {
-			await app.vault.createFolder(folderPath);
-		}
-		const file = app.vault.getAbstractFileByPath(filePath);
-		if (file) {
-			await app.workspace.openLinkText(filePath, "");
-		} else {
-			let content = ``;
-			if (weeklyFileTemplate) {
-				const templateFile =
-					app.vault.getAbstractFileByPath(weeklyFileTemplate);
-				if (templateFile && templateFile instanceof TFile) {
-					content = await app.vault.read(templateFile);
-				}
-			}
-			await app.vault.create(filePath, content);
-			await app.workspace.openLinkText(filePath, "");
-		}
+		await clickToOpenFile(app, plugin, NoteType.WEEKLY, formattedDate);
 	};
 
 	const handleMonthClick = async () => {
-		const {
-			rootFolder,
-			monthlyFolder,
-			monthlyFileName,
-			monthlyFileTemplate,
-		} = plugin.settings;
+		const { monthlyFileName } = plugin.settings;
 		// Create a date object for the first day of the current month
 		const monthDate = new Date(year, month, 1);
 
 		// Format the date using moment.js
 		const formattedDate = moment(monthDate).format(monthlyFileName);
-		const folderPath = `${rootFolder}/${monthlyFolder}`.replace(
-			/^\/+|\/+$/g,
-			""
-		);
-		const filePath = `${folderPath}/${formattedDate}.md`;
-		const folderExists = await app.vault.adapter.exists(folderPath);
-		if (!folderExists) {
-			await app.vault.createFolder(folderPath);
-		}
-		const file = app.vault.getAbstractFileByPath(filePath);
-		if (file) {
-			await app.workspace.openLinkText(filePath, "");
-		} else {
-			let content = ``;
-			if (monthlyFileTemplate) {
-				const templateFile =
-					app.vault.getAbstractFileByPath(monthlyFileTemplate);
-				if (templateFile && templateFile instanceof TFile) {
-					content = await app.vault.read(templateFile);
-				}
-			}
-			await app.vault.create(filePath, content);
-			await app.workspace.openLinkText(filePath, "");
-		}
+		await clickToOpenFile(app, plugin, NoteType.MONTHLY, formattedDate);
 	};
 
 	return (
