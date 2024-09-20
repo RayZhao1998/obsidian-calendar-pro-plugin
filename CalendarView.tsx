@@ -164,7 +164,7 @@ export const CalendarView = (props: {
 					style={{ color: "var(--color-green)", margin: 0 }}
 					onClick={handleMonthClick}
 				>
-					{year}年{month + 1}月
+					{moment(currentDate).format("MMMM YYYY")}
 				</h2>
 				<div>
 					<button onClick={() => changeMonth(-1)} style={buttonStyle}>
@@ -271,14 +271,10 @@ export const CalendarView = (props: {
 										alignItems: "center",
 										justifyContent: "center",
 										color: isCurrentMonth
-											? dayIndex === 0 || dayIndex === 6
-												? "var(--color-base-70)"
-												: "var(--color-base-100)"
-											: "#555",
+											? "var(--color-base-100)"
+											: "var(--color-base-40)",
 										backgroundColor: isToday
 											? "hsl(var(--accent-h), var(--accent-s), var(--accent-l))"
-											: isCurrentWeek
-											? "var(--color-base-05)"
 											: "transparent",
 									}}
 									onClick={() => handleDateClick(day)}
