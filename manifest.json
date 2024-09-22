@@ -3,9 +3,11 @@
 	"name": "Calendar Pro",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Calendar Pro is a plugin for Obsidian that provides a view of calendar and create daily/weekly/monthly/quarterly/yearly notes.",
+	"author": "RayZhao98",
+	"authorUrl": "https://github.com/RayZhao1998",
+	"fundingUrl": {
+		"Buy Me a Coffee": "https://buymeacoffee.com/52VQAdxhU"
+	},
 	"isDesktopOnly": false
 }

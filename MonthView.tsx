@@ -19,7 +19,9 @@ export const MonthView = ({
 
 	const handleMonthClick = async (month: number) => {
 		const { monthlyFileName } = plugin.settings;
-		const date = moment().year(currentYear).month(month - 1);
+		const date = moment()
+			.year(currentYear)
+			.month(month - 1);
 		const formattedDate = date.format(monthlyFileName);
 		await clickToOpenFile(app, plugin, NoteType.MONTHLY, formattedDate);
 	};
@@ -132,7 +134,9 @@ export const MonthView = ({
 							}}
 							onClick={() => handleMonthClick(month)}
 						>
-							{month}月
+							{moment()
+								.month(month - 1)
+								.format("MMM")}
 						</div>
 					))}
 				</div>
