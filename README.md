@@ -1,4 +1,4 @@
-# Calendar Pro
+# Obsidian Plugin - Calendar Pro
 
 Calendar Pro is a plugin for Obsidian that provides a view of calendar and create daily/weekly/monthly/quarterly/yearly notes.
 

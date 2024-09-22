@@ -21,11 +21,19 @@ export default class CalendarProPlugin extends Plugin {
 			(leaf) => new SideBarView(leaf, this)
 		);
 
-		this.addRibbonIcon("dice", "Activate view", () => {
-			this.activateView();
+		this.addCommand({
+			id: "activate-calendar-pro-view",
+			name: "Activate Calendar Pro View",
+			callback: () => {
+				this.activateView();
+			},
 		});
 
 		this.addSettingTab(new CalendarProSettingTab(this.app, this));
+
+		if (this.app.workspace.layoutReady) {
+			await this.activateView();
+		}
 	}
 
 	async activateView() {
