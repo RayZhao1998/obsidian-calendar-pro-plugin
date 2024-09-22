@@ -1,7 +1,7 @@
-import CalendarProPlugin from "main";
+import CalendarProPlugin from "./main";
 import { App, moment } from "obsidian";
 import React, { useState } from "react";
-import { clickToOpenFile, NoteType } from "utils";
+import { clickToOpenFile, NoteType } from "./utils";
 
 export const CalendarView = (props: {
 	app: App;

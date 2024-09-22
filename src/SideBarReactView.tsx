@@ -4,7 +4,7 @@ import { CalendarView } from "./CalendarView";
 import { MonthView } from "./MonthView";
 import { App } from "obsidian";
 import * as Tabs from "@radix-ui/react-tabs";
-import CalendarProPlugin from "main";
+import CalendarProPlugin from "./main";
 
 export const SideBarReactView = (props: {
 	app: App;

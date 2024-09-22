@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { App, moment } from "obsidian";
-import CalendarProPlugin from "main";
-import { clickToOpenFile, NoteType } from "utils";
+import CalendarProPlugin from "./main";
+import { clickToOpenFile, NoteType } from "./utils";
 
 export const MonthView = ({
 	app,

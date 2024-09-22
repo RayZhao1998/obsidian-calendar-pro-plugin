@@ -6,7 +6,7 @@ import {
 	CalendarProSettings,
 	CalendarProSettingTab,
 	DEFAULT_SETTINGS,
-} from "settings";
+} from "./settings";
 
 // Remember to rename these classes and interfaces!
 

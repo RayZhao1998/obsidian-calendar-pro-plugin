@@ -1,6 +1,8 @@
 import esbuild from "esbuild";
 import process from "process";
 import builtins from "builtin-modules";
+import copyPluginPkg from "@sprout2000/esbuild-copy-plugin";
+const { copyPlugin } = copyPluginPkg
 
 const banner =
 `/*
@@ -15,7 +17,7 @@ const context = await esbuild.context({
 	banner: {
 		js: banner,
 	},
-	entryPoints: ["main.tsx"],
+	entryPoints: ["src/main.tsx"],
 	bundle: true,
 	external: [
 		"obsidian",
@@ -37,8 +39,18 @@ const context = await esbuild.context({
 	logLevel: "info",
 	sourcemap: prod ? false : "inline",
 	treeShaking: true,
-	outfile: "main.js",
+	outfile: "dist/main.js",
 	minify: prod,
+	plugins: [
+		copyPlugin({
+			src: "src/styles.css",
+			dest: "dist/styles.css"
+		}),
+		copyPlugin({
+			src: "manifest.json",
+			dest: "dist/manifest.json"
+		})
+	]
 });
 
 if (prod) {

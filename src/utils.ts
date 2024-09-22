@@ -1,4 +1,4 @@
-import CalendarProPlugin from "main";
+import CalendarProPlugin from "./main";
 import { App, Notice, TFile } from "obsidian";
 
 export enum NoteType {

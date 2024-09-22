@@ -7,7 +7,7 @@
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && npm run copy-to-vault",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
-		"copy-to-vault": "cp main.js styles.css manifest.json 'Demo Vault/.obsidian/plugins/obsidian-calendar-pro-plugin/'"
+		"copy-to-vault": "cp -r dist/* 'Demo Vault/.obsidian/plugins/obsidian-calendar-pro-plugin/'"
 	},
 	"keywords": [],
 	"author": "",
@@ -22,7 +22,8 @@
 		"esbuild": "0.17.3",
 		"obsidian": "latest",
 		"tslib": "2.4.0",
-		"typescript": "4.7.4"
+		"typescript": "4.7.4",
+		"@sprout2000/esbuild-copy-plugin": "^1.1.14"
 	},
 	"dependencies": {
 		"@radix-ui/themes": "^3.1.3",
