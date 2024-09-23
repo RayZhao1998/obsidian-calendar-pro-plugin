@@ -23,7 +23,7 @@ export default class CalendarProPlugin extends Plugin {
 
 		this.addCommand({
 			id: "activate-calendar-pro-view",
-			name: "Activate Calendar Pro View",
+			name: "Activate view",
 			callback: () => {
 				this.activateView();
 			},

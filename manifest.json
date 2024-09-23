@@ -1,7 +1,7 @@
 {
 	"id": "calendar-pro",
 	"name": "Calendar Pro",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"minAppVersion": "0.15.0",
 	"description": "Calendar Pro is a plugin for Obsidian that provides a view of calendar and create daily/weekly/monthly/quarterly/yearly notes.",
 	"author": "Ray Zhao",
