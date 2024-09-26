@@ -30,10 +30,6 @@ export default class CalendarProPlugin extends Plugin {
 		});
 
 		this.addSettingTab(new CalendarProSettingTab(this.app, this));
-
-		if (this.app.workspace.layoutReady) {
-			await this.activateView();
-		}
 	}
 
 	async activateView() {

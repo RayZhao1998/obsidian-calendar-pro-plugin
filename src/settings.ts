@@ -60,7 +60,6 @@ export class CalendarProSettingTab extends PluginSettingTab {
 	display(): void {
 		const { containerEl } = this;
 		containerEl.empty();
-		containerEl.createEl("h3", { text: "General Settings" });
 
 		new Setting(containerEl)
 			.setName("Start day of week")
@@ -104,7 +103,8 @@ export class CalendarProSettingTab extends PluginSettingTab {
 				});
 			});
 
-		containerEl.createEl("h3", { text: "Daily Note Settings" });
+		new Setting(containerEl).setName("Daily Note").setHeading();
+
 		new Setting(containerEl)
 			.setName("Daily Note File Name")
 			.setDesc("The name of the daily note file.")
@@ -138,7 +138,7 @@ export class CalendarProSettingTab extends PluginSettingTab {
 				});
 			});
 
-		containerEl.createEl("h3", { text: "Weekly Note Settings" });
+		new Setting(containerEl).setName("Weekly Note").setHeading();
 		new Setting(containerEl)
 			.setName("Weekly Note File Name")
 			.setDesc("The name of the weekly note file.")
@@ -172,7 +172,7 @@ export class CalendarProSettingTab extends PluginSettingTab {
 				});
 			});
 
-		containerEl.createEl("h3", { text: "Monthly Note Settings" });
+		new Setting(containerEl).setName("Monthly Note").setHeading();
 		new Setting(containerEl)
 			.setName("Monthly Note File Name")
 			.setDesc("The name of the monthly note file.")
@@ -206,7 +206,7 @@ export class CalendarProSettingTab extends PluginSettingTab {
 				});
 			});
 
-		containerEl.createEl("h3", { text: "Quarterly Note Settings" });
+		new Setting(containerEl).setName("Quarterly Note").setHeading();
 		new Setting(containerEl)
 			.setName("Quarterly Note File Name")
 			.setDesc("The name of the quarterly note file.")
@@ -240,7 +240,7 @@ export class CalendarProSettingTab extends PluginSettingTab {
 				});
 			});
 
-		containerEl.createEl("h3", { text: "Yearly Note Settings" });
+		new Setting(containerEl).setName("Yearly Note").setHeading();
 		new Setting(containerEl)
 			.setName("Yearly Note File Name")
 			.setDesc("The name of the yearly note file.")

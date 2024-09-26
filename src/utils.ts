@@ -1,5 +1,5 @@
 import CalendarProPlugin from "./main";
-import { App, Notice, TFile } from "obsidian";
+import { App, normalizePath, Notice, TFile } from "obsidian";
 
 export enum NoteType {
 	DAILY = "daily",
@@ -19,7 +19,7 @@ export async function createOrOpenExistFile(
 	if (!folderExists) {
 		await app.vault.createFolder(folderPath);
 	}
-	const filePath = `${folderPath}/${fileName}.md`;
+	const filePath = normalizePath(`${folderPath}/${fileName}.md`);
 	const file = app.vault.getAbstractFileByPath(filePath);
 	if (file) {
 		await app.workspace.openLinkText(filePath, "");
@@ -48,10 +48,7 @@ export async function clickToOpenFile(
 		case NoteType.DAILY:
 			await createOrOpenExistFile(
 				app,
-				`${plugin.settings.rootFolder}/${plugin.settings.diaryFolder}`.replace(
-					/^\/+|\/+$/g,
-					""
-				),
+				normalizePath(`${plugin.settings.rootFolder}/${plugin.settings.diaryFolder}`),
 				fileTitle,
 				plugin.settings.diaryFileTemplate
 			);
@@ -59,9 +56,8 @@ export async function clickToOpenFile(
 		case NoteType.WEEKLY:
 			await createOrOpenExistFile(
 				app,
-				`${plugin.settings.rootFolder}/${plugin.settings.weeklyFolder}`.replace(
-					/^\/+|\/+$/g,
-					""
+				normalizePath(
+					`${plugin.settings.rootFolder}/${plugin.settings.weeklyFolder}`
 				),
 				fileTitle,
 				plugin.settings.weeklyFileTemplate
@@ -70,9 +66,8 @@ export async function clickToOpenFile(
 		case NoteType.MONTHLY:
 			await createOrOpenExistFile(
 				app,
-				`${plugin.settings.rootFolder}/${plugin.settings.monthlyFolder}`.replace(
-					/^\/+|\/+$/g,
-					""
+				normalizePath(
+					`${plugin.settings.rootFolder}/${plugin.settings.monthlyFolder}`
 				),
 				fileTitle,
 				plugin.settings.monthlyFileTemplate
@@ -81,9 +76,8 @@ export async function clickToOpenFile(
 		case NoteType.QUATERLY:
 			await createOrOpenExistFile(
 				app,
-				`${plugin.settings.rootFolder}/${plugin.settings.quarterlyFolder}`.replace(
-					/^\/+|\/+$/g,
-					""
+				normalizePath(
+					`${plugin.settings.rootFolder}/${plugin.settings.quarterlyFolder}`
 				),
 				fileTitle,
 				plugin.settings.quarterlyFileTemplate
@@ -92,9 +86,8 @@ export async function clickToOpenFile(
 		case NoteType.YEARLY:
 			await createOrOpenExistFile(
 				app,
-				`${plugin.settings.rootFolder}/${plugin.settings.yearlyFolder}`.replace(
-					/^\/+|\/+$/g,
-					""
+				normalizePath(
+					`${plugin.settings.rootFolder}/${plugin.settings.yearlyFolder}`
 				),
 				fileTitle,
 				plugin.settings.yearlyFileTemplate
