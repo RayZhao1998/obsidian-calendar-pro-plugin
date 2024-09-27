@@ -1,5 +1,7 @@
 import CalendarProPlugin from "./main";
 import { App, normalizePath, Notice, TFile } from "obsidian";
+import { CalendarProSettings } from "./settings";
+import moment from "moment";
 
 export enum NoteType {
 	DAILY = "daily",
@@ -7,6 +9,27 @@ export enum NoteType {
 	MONTHLY = "monthly",
 	QUATERLY = "quaterly",
 	YEARLY = "yearly",
+}
+
+export function getFilePath(
+	date: Date,
+	type: NoteType,
+	settings: CalendarProSettings
+) {
+	switch (type) {
+		case NoteType.DAILY:
+			return normalizePath(`${settings.rootFolder}/${settings.diaryFolder}/${moment(date).format(settings.diaryFileName)}.md`);
+		case NoteType.WEEKLY:
+			return normalizePath(`${settings.rootFolder}/${settings.weeklyFolder}/${moment(date).format(settings.weeklyFileName)}.md`);
+		case NoteType.MONTHLY:
+			return normalizePath(`${settings.rootFolder}/${settings.monthlyFolder}/${moment(date).format(settings.monthlyFileName)}.md`);
+		case NoteType.QUATERLY:
+			return normalizePath(`${settings.rootFolder}/${settings.quarterlyFolder}/${moment(date).format(settings.quarterlyFileName)}.md`);
+		case NoteType.YEARLY:
+			return normalizePath(`${settings.rootFolder}/${settings.yearlyFolder}/${moment(date).format(settings.yearlyFileName)}.md`);
+		default:
+			return "";
+	}
 }
 
 export async function createOrOpenExistFile(
@@ -48,7 +71,9 @@ export async function clickToOpenFile(
 		case NoteType.DAILY:
 			await createOrOpenExistFile(
 				app,
-				normalizePath(`${plugin.settings.rootFolder}/${plugin.settings.diaryFolder}`),
+				normalizePath(
+					`${plugin.settings.rootFolder}/${plugin.settings.diaryFolder}`
+				),
 				fileTitle,
 				plugin.settings.diaryFileTemplate
 			);
