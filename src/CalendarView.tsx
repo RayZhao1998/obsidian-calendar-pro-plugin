@@ -1,7 +1,7 @@
 import CalendarProPlugin from "./main";
 import { App, moment } from "obsidian";
 import React, { useState } from "react";
-import { clickToOpenFile, NoteType } from "./utils";
+import { clickToOpenFile, getFilePath, NoteType } from "./utils";
 
 export const CalendarView = (props: {
 	app: App;
@@ -58,6 +58,70 @@ export const CalendarView = (props: {
 		await clickToOpenFile(app, plugin, NoteType.MONTHLY, formattedDate);
 	};
 
+	const handleDateHover = (date: Date, event: React.MouseEvent) => {
+		const targetEl = event.currentTarget;
+
+		app.workspace.trigger(
+			"link-hover",
+			{
+				event,
+				source: "calendar",
+				targetEl,
+				linktext: getFilePath(date, NoteType.DAILY, plugin.settings),
+			},
+			targetEl,
+			getFilePath(date, NoteType.DAILY, plugin.settings),
+			getFilePath(date, NoteType.DAILY, plugin.settings)
+		);
+	};
+
+	const handleWeekHover = (
+		year: number,
+		month: number,
+		weekIndex: number,
+		event: React.MouseEvent
+	) => {
+		const targetEl = event.currentTarget;
+
+		const weekStartDate = new Date(year, month, weekIndex * 7);
+
+		app.workspace.trigger(
+			"link-hover",
+			{
+				event,
+				source: "calendar",
+				targetEl,
+				linktext: getFilePath(
+					weekStartDate,
+					NoteType.WEEKLY,
+					plugin.settings
+				),
+			},
+			targetEl,
+			getFilePath(weekStartDate, NoteType.WEEKLY, plugin.settings),
+			getFilePath(weekStartDate, NoteType.WEEKLY, plugin.settings)
+		);
+	};
+
+	const handleMonthHover = (year: number, month: number, event: React.MouseEvent) => {
+		const targetEl = event.currentTarget;
+
+		const monthDate = new Date(year, month, 1);
+
+		app.workspace.trigger(
+			"link-hover",
+			{
+				event,
+				source: "calendar",
+				targetEl,
+				linktext: getFilePath(monthDate, NoteType.MONTHLY, plugin.settings),
+			},
+			targetEl,
+			getFilePath(monthDate, NoteType.MONTHLY, plugin.settings),
+			getFilePath(monthDate, NoteType.MONTHLY, plugin.settings)
+		);
+	};
+
 	return (
 		<div
 			style={{
@@ -79,6 +143,9 @@ export const CalendarView = (props: {
 				<h2
 					style={{ color: "var(--color-green)", margin: 0 }}
 					onClick={handleMonthClick}
+					onMouseEnter={(event) =>
+						handleMonthHover(year, month, event)
+					}
 				>
 					{moment(currentDate).format("MMMM YYYY")}
 				</h2>
@@ -167,6 +234,9 @@ export const CalendarView = (props: {
 							onClick={() =>
 								handleWeekClick(year, month, weekIndex)
 							}
+							onMouseEnter={(event) =>
+								handleWeekHover(year, month, weekIndex, event)
+							}
 						>
 							{getWeekNumber(year, month, weekIndex)}
 						</div>
@@ -194,6 +264,9 @@ export const CalendarView = (props: {
 											: "transparent",
 									}}
 									onClick={() => handleDateClick(day)}
+									onMouseEnter={(event) =>
+										day && handleDateHover(day, event)
+									}
 								>
 									{day ? day.getDate() : ""}
 								</div>

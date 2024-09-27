@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { App, moment } from "obsidian";
 import CalendarProPlugin from "./main";
-import { clickToOpenFile, NoteType } from "./utils";
+import { clickToOpenFile, getFilePath, NoteType } from "./utils";
 
 export const MonthView = ({
 	app,
@@ -44,6 +44,72 @@ export const MonthView = ({
 		setCurrentYear(new Date().getFullYear());
 	};
 
+	const handleMonthHover = (
+		year: number,
+		month: number,
+		event: React.MouseEvent
+	) => {
+		const targetEl = event.currentTarget;
+
+		const monthDate = new Date(year, month - 1, 1);
+
+		app.workspace.trigger(
+			"link-hover",
+			{
+				event,
+				source: "calendar",
+				targetEl,
+				linktext: getFilePath(
+					monthDate,
+					NoteType.MONTHLY,
+					plugin.settings
+				),
+			},
+			targetEl,
+			getFilePath(monthDate, NoteType.MONTHLY, plugin.settings),
+			getFilePath(monthDate, NoteType.MONTHLY, plugin.settings)
+		);
+	};
+
+	const handleQuarterHover = (year: number, quarter: number, event: React.MouseEvent) => {
+		const targetEl = event.currentTarget;
+
+		const quarterDate = new Date(year, (quarter - 1) * 3, 1);
+
+		app.workspace.trigger(
+			"link-hover",
+			{
+				event,
+				source: "calendar",
+				targetEl,
+				linktext: getFilePath(quarterDate, NoteType.QUATERLY, plugin.settings),
+			},
+			targetEl,
+			getFilePath(quarterDate, NoteType.QUATERLY, plugin.settings),
+			getFilePath(quarterDate, NoteType.QUATERLY, plugin.settings)
+		);
+	};
+
+	const handleYearHover = (year: number, event: React.MouseEvent) => {
+		const targetEl = event.currentTarget;
+
+		const yearDate = new Date(year, 0, 1);
+
+		app.workspace.trigger(
+			"link-hover",
+			{
+				event,
+				source: "calendar",
+				targetEl,
+				linktext: getFilePath(yearDate, NoteType.YEARLY, plugin.settings),
+			},
+			targetEl,
+			getFilePath(yearDate, NoteType.YEARLY, plugin.settings),
+			getFilePath(yearDate, NoteType.YEARLY, plugin.settings)
+		);
+	};
+
+
 	const quarters = [
 		{ q: "Q1", months: [1, 2, 3] },
 		{ q: "Q2", months: [4, 5, 6] },
@@ -72,6 +138,7 @@ export const MonthView = ({
 				<h2
 					style={{ color: "var(--color-green)", margin: 0 }}
 					onClick={() => handleYearClick(currentYear)}
+					onMouseEnter={(event) => handleYearHover(currentYear, event)}
 				>
 					{currentYear}
 				</h2>
@@ -114,6 +181,7 @@ export const MonthView = ({
 							cursor: "pointer",
 						}}
 						onClick={() => handleQuarterClick(index + 1)}
+						onMouseEnter={(event) => handleQuarterHover(currentYear, index + 1, event)}
 					>
 						{quarter.q}
 					</div>
@@ -133,6 +201,7 @@ export const MonthView = ({
 								cursor: "pointer",
 							}}
 							onClick={() => handleMonthClick(month)}
+							onMouseEnter={(event) => handleMonthHover(currentYear, month, event)}
 						>
 							{moment()
 								.month(month - 1)
